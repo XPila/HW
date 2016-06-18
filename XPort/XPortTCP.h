@@ -7,6 +7,8 @@
 typedef struct SXPort SXPort;
 typedef struct SXPortTCP SXPortTCP;
 
+void* XPortTCP_LogFile;
+
 SXPortTCP* XPortTCP_Init(void* pLocAddr, void* pRemAddr, int iTimeout);
 void XPortTCP_Done(SXPortTCP* pPort);
 

@@ -56,3 +56,4 @@ int XBuf_Set(SXBuf* pBuf, int iPos, int iCnt)
 	pBuf->iCnt = iCnt;
 	return iOldCnt;
 }
+

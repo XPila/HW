@@ -323,16 +323,16 @@ int X51Asm_File(SX51Asm* pAsm, char* pcFileName)
 int X51Asm_Op(int iFlags, int* piOpVal, unsigned short usAddr, char* pcAsm, int* piAsm, int* piOpMsk, FX51Name2Value* pName2Value, void* pParam)
 {
 	int c = 0; //sscanf result (number of parameters parsed)
-	int n = 0; //scanf result of "%n" (number of characters procesed)
+	int n = 0; //sscanf result of "%n" (number of characters procesed)
 	char cOp[X51_MAX_STR_OP + 2] = {0}; //bufer for operand
 	int iOpMsk = 0; //operand mask
 	int iOpVal = 0; //Operand value
 	if (piAsm) *piAsm = n;
 	//parse operand
 	n = 0; c = sscanf(pcAsm, "%63[#$@0-9a-zA-Z_+-]%n", cOp, &n);
-	printf("1 i=%d c=%d n=%d pc='%s'\n", 0, c, n, pcAsm + 0);
+//	printf("1 i=%d c=%d n=%d pc='%s'\n", 0, c, n, pcAsm + 0);
 	if (c != 1) return X51_ASM_ERR_INVCHR;
-	printf("Op = '%s'\n", cOp);
+//	printf("Op = '%s'\n", cOp);
 	iOpMsk = X51Asm_Str2OpMskAndVal(cOp, &iOpVal);
 	if (iOpMsk == 0)
 	{
@@ -341,14 +341,14 @@ int X51Asm_Op(int iFlags, int* piOpVal, unsigned short usAddr, char* pcAsm, int*
 		{
 			if (c == 1) n = 1;
 			if (pcAsm[0] == '#') n++;
-			printf("SYMBOL: %s\n", cOp);
+//			printf("SYMBOL: %s\n", cOp);
 			if (pcAsm[0] == '#') iOpMsk |= (X51_OPM_Data8 | X51_OPM_Data16);
 			else iOpMsk |= (X51_OPM_Bit | X51_OPM_Dir | X51_OPM_Addr16 | X51_OPM_Rel | X51_OPM_P_ALL);
 		}
 	}
 	if (iOpMsk == 0) return X51_ASM_ERR_INVOP0;
-	printf("OpMsk = 0x%08x\n", iOpMsk);
-	printf("OpVal = %d\n", iOpVal);
+//	printf("OpMsk = 0x%08x\n", iOpMsk);
+//	printf("OpVal = %d\n", iOpVal);
 	if (piOpVal) *piOpVal = iOpVal;
 	if (piOpMsk) *piOpMsk = iOpMsk;
 	if (piAsm) *piAsm = n;
@@ -384,7 +384,7 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 	if (n != iLen) return X51_ASM_ERR_INVCHR;
 	//parse instruction name
 	n = 0; c = sscanf(pcAsm, "%6[A-Z]%n", cIns, &n); i = n;
-	printf("0 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//	printf("0 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 	if (c == 0) return X51_ASM_ERR_SYNTAX;
 	if (n > 5) return X51_ASM_ERR_UNKINS;
 	if (pcAsm[i]) //not end of string
@@ -393,7 +393,7 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 		n = 0; c = sscanf(pcAsm + i, "%*[ \t]%n", &n); i += n;
 		//must be at least one whitespace char between instruction and operands
 		if (n < 1) return X51_ASM_ERR_INVCHR;
-		printf("x i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//		printf("x i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 	}
 		
 	iIns = X51Asm_Str2Ins(cIns);
@@ -401,8 +401,8 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 	iOpCnt = g_psInsOpTab[iIns].opcnt;
 	iOpVCnt = g_psInsOpTab[iIns].opvcnt;
 //	printf("INS=%d %s\n", iIns, X51Asm_Ins2Str(iIns));
-	printf("operands=%d\n", iOpCnt);
-	printf("variants=%d\n", iOpVCnt);
+//	printf("operands=%d\n", iOpCnt);
+//	printf("variants=%d\n", iOpVCnt);
 	for (iOp = 0; iOp < iOpCnt; iOp++)
 	{
 		//check end of string
@@ -415,14 +415,14 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 		{
 			//skip whitespace
 			n = 0; c = sscanf(pcAsm + i, "%*[ \t]%n", &n); i += n;
-			printf("2 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//			printf("2 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 			//match ','
 			n = 0; c = sscanf(pcAsm + i, ",%n", &n); i += n;
-			printf("3 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//			printf("3 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 			if (n != 1) return X51_ASM_ERR_EXP0OP - iOpCnt;
 			//skip whitespace
 			n = 0; c = sscanf(pcAsm + i, "%*[ \t]%n", &n); i += n;
-			printf("4 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//			printf("4 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 		}
 	}
 	if (pcAsm[i]) //not end of string
@@ -433,29 +433,29 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 		if ((iOpCnt > 0) && (pcAsm[i] == ',')) return X51_ASM_ERR_EXP0OP - iOpCnt;
 		//only whitespace allowed after instruction and operands
 		if (n < iLen) return X51_ASM_ERR_INVCHR;
-		printf("5 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
+//		printf("5 i=%d c=%d n=%d pc='%s'\n", i, c, n, pcAsm + i);
 	}
 	for (iOpV = 0; iOpV < iOpVCnt; iOpV++)
 	{
 		ulOpVar = g_psInsOpTab[iIns].opvars[iOpV];
 		char* pcOpVar = (char*)&ulOpVar;
-		printf("opv: %d  %06x ", iOpV, ulOpVar);
+//		printf("opv: %d  %06x ", iOpV, ulOpVar);
 		for (iOp = 0; iOp < iOpCnt; iOp++)
 		{
 			int iMsk = (1 << (pcOpVar[iOp + 1] - 1));
-			printf("msk%d %08x  ", iOp, iMsk);
+//			printf("msk%d %08x  ", iOp, iMsk);
 			if ((iMsk & iOpMsk[iOp]) == 0) break;
 			if (iOpOK < (iOp + 1)) iOpOK = iOp + 1;
 		}
-		printf(" %s (ok=%d)\n", (iOp == iOpCnt)?"OK":"NG", iOpOK);
+//		printf(" %s (ok=%d)\n", (iOp == iOpCnt)?"OK":"NG", iOpOK);
 		if (iOp == iOpCnt)
 			break;
 	}
 	if (iOpV == iOpVCnt) return X51_ASM_ERR_INVOP0 - iOpOK;
 	ucCode = g_psInsOpTab[iIns].opvars[iOpV] & 0xff;
-	if (iOpCnt > 0) printf("OP0: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op0));
-	if (iOpCnt > 1) printf("OP1: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op1));
-	if (iOpCnt > 2) printf("OP2: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op2));
+//	if (iOpCnt > 0) printf("OP0: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op0));
+//	if (iOpCnt > 1) printf("OP1: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op1));
+//	if (iOpCnt > 2) printf("OP2: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op2));
 		
 /*		printf("opv: %d\n", iOpV);
 		for (iOpV = 0; iOpV < iOpVCnt; iOpV++)
@@ -470,7 +470,7 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 	//store code
 	pucCode += usAddr;
 	*(pucCode++) = ucCode; //instruction code
-	printf("CODE: %02x", ucCode);
+//	printf("CODE: %02x", ucCode);
 	SX51Ins* psIns = g_psInsTab + ucCode;
 	char* pcOp = &psIns->op0;
 	for (iOp = 0; iOp < iOpCnt; iOp++)
@@ -478,15 +478,15 @@ int X51Asm_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* 
 		if (pcOp[iOp] >= X51_OP_2)
 		{
 			*(pucCode++) = iOpVal[iOp] >> 8;
-			printf(" %02x", pucCode[-1]);
+//			printf(" %02x", pucCode[-1]);
 		}
 		if (pcOp[iOp] >= X51_OP_1)
 		{
 			*(pucCode++) = iOpVal[iOp] & 0xff;
-			printf(" %02x", pucCode[-1]);
+//			printf(" %02x", pucCode[-1]);
 		}
 	}
-	printf("\n");
+//	printf("\n");
 				
 	
 //	  printf("OP0: %s\n", X51Das_OpStr(g_psInsTab[ucCode].op0));

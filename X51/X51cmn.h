@@ -38,6 +38,9 @@ typedef struct SX51InsOp
 	unsigned long* opvars; //variants
 } SX51InsOp;
 
+//Structure for string-int pair
+typedef struct SStrInt {char* pc; int i;} SStrInt;
+
 
 //--------------------------------------
 //general functions
@@ -53,15 +56,16 @@ void X51_Done();
 //helper functions
 
 //encode bit addres (0-255) to idata addres multiplied by 8 (bit 0-2 is bit index)
-int X51_BitAddrEnc(unsigned char ucBitAddr);
+//int X51_BitAddrEnc(unsigned char ucBitAddr);
 //decode bit addres (0-255) from idata addres multiplied by 8 (bit 0-2 is bit index)
-int X51_BitAddrDec(int iIDataX8Addr);
-
+//int X51_BitAddrDec(int iIDataX8Addr);
 
 //decode instruction - this function is used just for generating the instruction table ()
 int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* piOp2, int* piBytes, int* piCyclesX1, int* piCyclesSC);
 
 int printf_bin(int val, int bits);
+int compare_val(const void* p1, const void* p2);
+int compare_str(const void* p1, const void* p2);
 
 
 #endif //_X51CMN_H

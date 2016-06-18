@@ -156,14 +156,28 @@ int XHubPort_Rx(SXHubPort* pPort, void* pData, int iSize)
 		pthread_mutex_lock(&pPort->pHub->sBufLock);
 		int iBuf = XBuf_Get(&pPort->sBuf, pData, iSize);
 		pthread_mutex_unlock(&pPort->pHub->sBufLock);
-		if (iBuf == iSize) return iSize;
+		if (iBuf == iSize)
+		{
+			if (XHub_LogFile)
+			{
+				fprintf((FILE*)XHub_LogFile, "HUB%d Rx(0)\n", pPort - pPort->pHub->sPort);
+			}
+			return iSize;
+		}
 		if (iBuf == 0)
 		{
 			pthread_mutex_lock(&pPort->sLock);
 			int iRx = (pPort->pLnkPort)?XPort_Rx(pPort->pLnkPort, pData, iSize):0;
 			pthread_mutex_unlock(&pPort->sLock);
 			int iHub = (iRx > 0)?XHub_Put(pPort->pHub, pPort, pData, iRx):0;
-			if (iRx != 0) return iRx;
+			if (iRx != 0)
+			{
+				if (XHub_LogFile)
+				{
+					fprintf((FILE*)XHub_LogFile, "HUB%d Rx(1)\n", pPort - pPort->pHub->sPort);
+				}
+				return iRx;
+			}
 		}
 		do
 		{
@@ -172,6 +186,10 @@ int XHubPort_Rx(SXHubPort* pPort, void* pData, int iSize)
 			pthread_mutex_unlock(&pPort->pHub->sBufLock);
 			if (iBuf == iSize) return iBuf;
 		} while (!pthread_cond_timedwait(&pPort->pHub->sBufCond, 0, &sTime));
+		if (XHub_LogFile)
+		{
+			fprintf((FILE*)XHub_LogFile, "HUB%d Rx(2)\n", pPort - pPort->pHub->sPort);
+		}
 		return iBuf;
 	}
 	pthread_mutex_lock(&pPort->sLock);
@@ -181,7 +199,7 @@ int XHubPort_Rx(SXHubPort* pPort, void* pData, int iSize)
 	if (XHub_LogFile)
 	{
 		char* pcHex = hexstr(pData, iRx);
-		if (iHub == iRx == iSize)
+		if ((iHub == iRx) && (iRx == iSize))
 			fprintf((FILE*)XHub_LogFile, "HUB%d Rx %d %s\n", pPort - pPort->pHub->sPort, iSize, pcHex);
 		else
 			fprintf((FILE*)XHub_LogFile, "HUB%d Rx Err %d %s (tx=%d hub=%d)\n", pPort - pPort->pHub->sPort, iSize, pcHex, iRx, iHub);
@@ -200,7 +218,7 @@ int XHubPort_Tx(SXHubPort* pPort, void* pData, int iSize)
 	if (XHub_LogFile)
 	{
 		char* pcHex = hexstr(pData, iSize);
-		if ((iHub == iTx) == iSize)
+		if ((iHub == iTx) && (iTx == iSize))
 			fprintf((FILE*)XHub_LogFile, "HUB%d Tx %d %s\n", pPort - pPort->pHub->sPort, iSize, pcHex);
 		else
 			fprintf((FILE*)XHub_LogFile, "HUB%d Tx Err %d %s (tx=%d hub=%d)\n", pPort - pPort->pHub->sPort, iSize, pcHex, iTx, iHub);

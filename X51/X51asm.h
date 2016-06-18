@@ -7,7 +7,7 @@
 #define _X51ASM_H
 
 #include "X51cmn.h" //common header
-#include "X51asmD.h" //assembler definition
+#include "X51asmD.h" //assembler definition header
 #include <limits.h> //limits header (PATH_MAX..)
 
 

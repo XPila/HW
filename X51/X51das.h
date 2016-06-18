@@ -16,7 +16,7 @@ int X51Das_Op(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* p
 //disassembly instruction
 int X51Das_Ins(int iFlags, unsigned char* pucCode, unsigned short usAddr, char* pcAsm, int* piAsm, FX51Value2Name* pValue2Name, void* pParam);
 //disassembly code
-int X51Das_ToFile(void* pFile, unsigned char* pucCode, int iAddrStart, int iAddrEnd, int iMaxInsCnt, FX51Value2Name* pValue2Name, void* pParam);
+int X51Das_ToFile(void* pFile, int iFlags, unsigned char* pucCode, int iAddrStart, int iAddrEnd, int iMaxInsCnt, FX51Value2Name* pValue2Name, void* pParam);
 
 //returns instruction string (e.g. "JMP")
 char* X51Das_InsStr(int iIns);

@@ -51,6 +51,8 @@ SXPortTTY* XPortTTY_Init(char* pcDev, int iBaud, int iSize, int iParity, int iSt
 	if (tcsetattr(sPort.iFile, TCSANOW, &ts) != 0) goto e0;
 	SXPortTTY* pPort = (SXPortTTY*)malloc(sizeof(SXPortTTY));
 	*pPort = sPort;
+	char dummy;
+	while (read(pPort->iFile, &dummy, 1) == 1);
 	return pPort;
 e0:
 	close(sPort.iFile);

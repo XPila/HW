@@ -18,13 +18,6 @@ SX51Ins* g_psInsTab = 0;
 SX51InsOp* g_psInsOpTab = 0;
 
 
-//Structure for string-int pair
-typedef struct SStrInt {char* pc; int i;} SStrInt;
-
-int compare_val(const void* p1, const void* p2);
-int compare_str(const void* p1, const void* p2);
-
-
 int X51_Init()
 {
 	int iRet = -1;
@@ -42,7 +35,7 @@ int X51_Init()
 	if (!(g_psInsOpTab = (SX51InsOp*)malloc((X51_INS_MAX + 1) * sizeof(SX51InsOp)))) goto e1;
 	memset(g_psInsOpTab, 0, (X51_INS_MAX + 1) * sizeof(SX51InsOp));
 	//Generate table of instruction operand masks and varinats
-	for (int iIns = 0; iIns <= X51_INS_MAX; iIns++)
+	for (int iIns = 1; iIns <= X51_INS_MAX; iIns++)
 	{
 		int iOpMin = 3;
 		int iOpMax = 0;
@@ -254,7 +247,7 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 		case 0x01: ret1(X51_INS_AJMP, 2, 2, 3, X51_OP_P4);
 		case 0x02: ret2(X51_INS_ANL, 2, 2, 2, X51_OP_C, X51_OP_Bit);
 		case 0x03: ret2(X51_INS_MOVC, 1, 2, 3, X51_OP_A, X51_OP_iAPC);
-		case 0x04: ret1(X51_INS_DIV, 2, 4, 4, X51_OP_AB);
+		case 0x04: ret1(X51_INS_DIV, 1, 4, 4, X51_OP_AB);
 		default:
 			switch (ucLNibble) {
 			case 0x05: ret2(X51_INS_MOV, 3, 2, 3, X51_OP_Dir, X51_OP_Dir);
@@ -279,12 +272,12 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 	case 0x0A:
 		switch (ucLNibble)
 		{
-		case 0x00: ret2(X51_INS_ORL, 2, 2, 2, X51_OP_C, X51_OP_Bit);
+		case 0x00: ret2(X51_INS_ORLN, 2, 2, 2, X51_OP_C, X51_OP_Bit);
 		case 0x01: ret1(X51_INS_AJMP, 2, 2, 3, X51_OP_P5);
 		case 0x02: ret2(X51_INS_MOV, 2, 1, 2, X51_OP_C, X51_OP_Bit);
 		case 0x03: ret1(X51_INS_INC, 1, 2, 2, X51_OP_DPTR);
 		case 0x04: ret1(X51_INS_MUL, 1, 4, 2, X51_OP_AB);
-		case 0x05: ret0(X51_INS_0, 1, 1, 1);
+		case 0x05: ret0(X51_INS_A5, 1, 1, 1);
 		default:
 			switch (ucLNibble) {
 			case 0x06: case 0x07: ret2(X51_INS_MOV, 2, 2, 2, X51_OP_iR0 + (ucLNibble - 0x06), X51_OP_Dir);
@@ -294,7 +287,7 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 	case 0x0B:
 		switch (ucLNibble)
 		{
-		case 0x00: ret2(X51_INS_ANL, 2, 2, 2, X51_OP_C, X51_OP_Bit);
+		case 0x00: ret2(X51_INS_ANLN, 2, 2, 2, X51_OP_C, X51_OP_Bit);
 		case 0x01: ret1(X51_INS_ACALL, 2, 2, 3, X51_OP_P5);
 		case 0x02: ret1(X51_INS_CPL, 2, 1, 2, X51_OP_Bit);
 		case 0x03: ret1(X51_INS_CPL, 1, 1, 1, X51_OP_C);
@@ -302,8 +295,8 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 			switch (ucLNibble) {
 			case 0x04: ret3(X51_INS_CJNE, 3, 2, 4, X51_OP_A, X51_OP_Data8, X51_OP_Rel);
 			case 0x05: ret3(X51_INS_CJNE, 3, 2, 4, X51_OP_A, X51_OP_Dir, X51_OP_Rel);
-			case 0x06: case 0x07: ret3(X51_INS_CJNE, 3, 2, 4, X51_OP_A, X51_OP_iR0 + (ucLNibble - 0x06), X51_OP_Rel);
-			default: ret3(X51_INS_CJNE, 3, 2, 4, X51_OP_A, X51_OP_R0 + (ucLNibble - 0x08), X51_OP_Rel);
+			case 0x06: case 0x07: ret3(X51_INS_CJNE, 2, 2, 4, X51_OP_iR0 + (ucLNibble - 0x06), X51_OP_Data8, X51_OP_Rel);
+			default: ret3(X51_INS_CJNE, 2, 2, 4, X51_OP_R0 + (ucLNibble - 0x08), X51_OP_Data8, X51_OP_Rel);
 			} break;
 		} break;
 	case 0x0C:
@@ -333,10 +326,10 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 		} break;
 	case 0x0E:
 		switch (ucLNibble) {
-		case 0x00: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_A, X51_OP_iDPTR);
+		case 0x00: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_A, X51_OP_iDPTR);
 		case 0x01: ret1(X51_INS_AJMP, 2, 2, 3, X51_OP_P7);
-		case 0x02: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_A, X51_OP_iR0);
-		case 0x03: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_A, X51_OP_iR1);
+		case 0x02: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_A, X51_OP_iR0);
+		case 0x03: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_A, X51_OP_iR1);
 		case 0x04: ret1(X51_INS_CLR, 1, 1, 1, X51_OP_A);
 		default:
 			switch (ucLNibble) {
@@ -347,10 +340,10 @@ int X51_DecIns(unsigned char ucCode, int* piIns, int* piOp0, int* piOp1, int* pi
 		} break;
 	case 0x0F:
 		switch (ucLNibble) {
-		case 0x00: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_iDPTR, X51_OP_A);
+		case 0x00: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_iDPTR, X51_OP_A);
 		case 0x01: ret1(X51_INS_ACALL, 2, 2, 3, X51_OP_P7);
-		case 0x02: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_iR0, X51_OP_A);
-		case 0x03: ret2(X51_INS_MOVX, 1, 2, 1, X51_OP_iR1, X51_OP_A);
+		case 0x02: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_iR0, X51_OP_A);
+		case 0x03: ret2(X51_INS_MOVX, 1, 2, 3, X51_OP_iR1, X51_OP_A);
 		case 0x04: ret1(X51_INS_CPL, 1, 1, 1, X51_OP_A);
 		default:
 			switch (ucLNibble) {
